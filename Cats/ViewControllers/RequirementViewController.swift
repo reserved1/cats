@@ -18,6 +18,8 @@ class RequirementViewController: UIViewController {
     override func loadView() {
         super.loadView()
         self.view = requirementView
+        self.requirementView.tableView.backgroundView = UIImageView.init(image: Api.getCatImage())
+        self.requirementView.tableView.backgroundView?.contentMode = .scaleAspectFit
         self.requirementView.tableView.dataSource = self
         self.requirementView.tableView.delegate = self
     }
@@ -35,7 +37,7 @@ class RequirementViewController: UIViewController {
 
     private func addAlert() {
         let alertController = UIAlertController(title: "Enter a new requirement", message: nil, preferredStyle: .alert)
-        alertController.viewRespectsSystemMinimumLayoutMargins = true
+        alertController.viewRespectsSystemMinimumLayoutMargins = false
         alertController.addTextField()
         let submitAction = UIAlertAction(title: "Save", style: .default) { [unowned alertController] _ in
             let answer = alertController.textFields![0]
@@ -46,6 +48,10 @@ class RequirementViewController: UIViewController {
         }
         alertController.addAction(submitAction)
         present(alertController, animated: true)
+    }
+
+    private func addSheet() {
+        //
     }
 }
 
