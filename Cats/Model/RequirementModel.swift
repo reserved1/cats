@@ -1,10 +1,12 @@
 import Foundation
 
-class Requirement {
+class Requirement: Codable {
+    let id: UUID
     let text: String
     var isDone: Bool = false
 
     init(_ text: String) {
+        self.id = UUID()
         self.text = text
     }
 }
