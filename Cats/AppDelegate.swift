@@ -1,22 +1,14 @@
 import UIKit
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        window = UIWindow()
-        window?.rootViewController = UIViewController()
-        window?.makeKeyAndVisible()
-
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
 
     func application(
         _ application: UIApplication,
@@ -31,5 +23,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didDiscardSceneSessions sceneSessions: Set<UISceneSession>
     ) {
     }
-
 }
