@@ -19,14 +19,14 @@ git clone https://github.com/reserved1/cats.git
 
 O programa possui um layout simples:
 - Existe uma imagem de um gato no fundo quando há poucos requisitos.
-- Aperte no botão no centro inferior da tela, para adicionar um Requisito.  
+- Aperte no botão no centro inferior da tela para adicionar um Requisito.  
 - Após ter requisitos adicionados você pode:
 
   . Arrastar para esquerda o requisito para ver botões de Apagar ou Editar.
 - Apertar em um requisito irá marca-lo na direita, sinalizando que está feito.
 
   . Apertando em um requisito já marcado o desmarca.
-- Ao Marcar/Desmarcar ou Criar um requisito, a imagem de fundo muda para outro Gato.
+- Ao Marcar/Desmarcar, Criar ou Editar um requisito, a imagem de fundo muda para outro Gato.
 
 E é isso.
 
