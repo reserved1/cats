@@ -1,97 +1,83 @@
 import UIKit
 
 class RequirementViewController: UIViewController {
-
-    private var requirementViewModel: RequirementViewModel
-    private var requirementView: RequirementView
-
+// MARK: Properties for views/view models.
+    var requirementViewModel: RequirementViewModel
+    var requirementView: RequirementView
+    var sheetRequirementView: SheetRequirementView
+// MARK: Initializers.
     init() {
         self.requirementViewModel = RequirementViewModel()
         self.requirementView = RequirementView()
+        self.sheetRequirementView = SheetRequirementView(Requirement(""))
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+// MARK: View Lifecyle.
     override func loadView() {
         super.loadView()
         self.view = requirementView
-        self.requirementView.tableView.backgroundView = UIImageView.init(image: Api.getCatImage())
-        self.requirementView.tableView.backgroundView?.contentMode = .scaleAspectFit
         self.requirementView.tableView.dataSource = self
         self.requirementView.tableView.delegate = self
+        Task {
+            await requirementViewModel.changeBackground(self.requirementView.tableView)
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        addAction()
+        addRequirementAction()
+        sheetButtonAction()
     }
-
-    private func addAction() {
-        requirementView.addTask = { [weak self] in
-            self?.addAlert()
+// MARK: Closures and Actions for binding.
+    // Binding for Requirement View Button/Action.
+    private func addRequirementAction() {
+        requirementView.addRequirement = { [weak self] in
+            self?.showAddSheet()
         }
     }
-
-    private func addAlert() {
-        let alertController = UIAlertController(title: "Enter a new requirement", message: nil, preferredStyle: .alert)
-        alertController.viewRespectsSystemMinimumLayoutMargins = false
-        alertController.addTextField()
-        let submitAction = UIAlertAction(title: "Save", style: .default) { [unowned alertController] _ in
-            let answer = alertController.textFields![0]
-            if !answer.text!.isEmpty {
-                self.requirementViewModel.addToRequirements(answer.text!)
-                self.requirementView.tableView.reloadData()
+    // Display for AddAction sheet.
+    private func showAddSheet() {
+        self.sheetRequirementView.textField.text = ""
+        self.sheetRequirementView.flag = false
+        let navController = UINavigationController(rootViewController: self.sheetRequirementView)
+        if let sheet = navController.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                0.25 * context.maximumDetentValue
+            })]
+    }
+        self.present(navController, animated: true)
+    }
+    // Binding for Sheet Requirement View Button/Action.
+    private func sheetButtonAction() {
+        sheetRequirementView.confirmButton = { [weak self] in
+            self?.addRequirementButton()
+        }
+    }
+    // Call for Create or Update content from Sheet Requirement View Button.
+    private func addRequirementButton() {
+        if !sheetRequirementView.textField.text!.isEmpty {
+            if sheetRequirementView.flag == false {
+                requirementViewModel.addToRequirements(sheetRequirementView.textField.text!)
+                requirementView.tableView.reloadData()
+                Task {
+                    await requirementViewModel.changeBackground(self.requirementView.tableView)
+                }
+            } else {
+                requirementViewModel.edittedRequirement?.text = sheetRequirementView.textField.text!
+                for index in requirementViewModel.requirements
+                where index.id == requirementViewModel.edittedRequirement?.id {
+                    index.text = requirementViewModel.edittedRequirement!.text
+                }
+                requirementView.tableView.reloadData()
+                Task {
+                    await requirementViewModel.changeBackground(self.requirementView.tableView)
+                }
             }
         }
-        alertController.addAction(submitAction)
-        present(alertController, animated: true)
-    }
-
-    private func addSheet() {
-        //
-    }
-}
-
-extension RequirementViewController: UITableViewDataSource {
-
-    func tableView(
-        _ tableView: UITableView,
-        numberOfRowsInSection section: Int
-    ) -> Int {
-        requirementViewModel.numberOfRows()
-    }
-
-    func tableView(
-        _ tableView: UITableView,
-        cellForRowAt indexPath: IndexPath
-    ) -> UITableViewCell {
-        requirementViewModel.makeCell(tableView, indexPath)
-    }
-
-    func tableView(
-        _ tableView: UITableView,
-        didSelectRowAt indexPath: IndexPath
-    ) {
-        requirementViewModel.deselectCell(tableView, indexPath)
-    }
-
-}
-
-extension RequirementViewController: UITableViewDelegate {
-
-    func tableView(
-        _ tableView: UITableView,
-        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
-    ) -> UISwipeActionsConfiguration? {
-
-        let delete = requirementViewModel.deleteCell(tableView, indexPath)
-        let edit = requirementViewModel.updateCell(requirementViewModel.requirements[indexPath.row], tableView)
-
-        let config = UISwipeActionsConfiguration(actions: [edit, delete])
-        config.performsFirstActionWithFullSwipe = false
-        return config
+        requirementViewModel.saveRequirements()
     }
 }

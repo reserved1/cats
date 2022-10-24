@@ -2,7 +2,7 @@ import Foundation
 
 class Requirement: Codable {
     let id: UUID
-    let text: String
+    var text: String
     var isDone: Bool = false
 
     init(_ text: String) {

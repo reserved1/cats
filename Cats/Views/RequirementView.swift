@@ -1,8 +1,8 @@
 import UIKit
 
 class RequirementView: UIView {
-
-    var addTask: ( () -> Void )?
+// MARK: Properties for Requirement View.
+    var addRequirement: ( () -> Void )?
 
     lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
@@ -30,23 +30,21 @@ class RequirementView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+// MARK: View Lifecyle.
     override func layoutSubviews() {
         super.layoutSubviews()
         self.buildLayout()
         self.backgroundColor = .systemBackground
-        addButton.addTarget(self, action: #selector(addTaskButton), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(addRequirementButton), for: .touchUpInside)
     }
-
-    @objc private func addTaskButton() {
-        addTask?()
+    // Binding for closure addRequirement. Used on Requirement View Controller.
+    @objc private func addRequirementButton() {
+        addRequirement?()
     }
 }
-
+// MARK: Setup view`s components and constraints.
 extension RequirementView: ViewCoding {
-
     func setupHierarchy() {
-
         self.addSubview(self.tableView)
         self.addSubview(self.titleLabel)
         self.addSubview(self.addButton)
